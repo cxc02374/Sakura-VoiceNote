@@ -33,7 +33,7 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdi
 
 [Icons]
 Name: "{group}\Sakura VoiceNote"; Filename: "{app}\SakuraVoiceNote.exe"
-Name: "{commondesktop}\Sakura VoiceNote"; Filename: "{app}\SakuraVoiceNote.exe"
+Name: "{userdesktop}\Sakura VoiceNote"; Filename: "{app}\SakuraVoiceNote.exe"
 
 [Run]
 Filename: "{app}\SakuraVoiceNote.exe"; Description: "Sakura VoiceNote を起動"; Flags: nowait postinstall skipifsilent
