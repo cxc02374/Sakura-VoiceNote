@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Local settings / secrets
+.env
+
+# Build artifacts
+build/
+dist/
+output/
+
+# Temporary helper files
+_update_icon_b64.py
+
+# OS / editor
+.DS_Store
+Thumbs.db
