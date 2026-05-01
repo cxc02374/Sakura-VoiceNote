@@ -380,25 +380,40 @@ def run_pipeline(
     )
 
 
-def save_outputs(output_dir: Path, result: PipelineResult, *, source_url: str | None = None) -> None:
+def save_outputs(
+    output_dir: Path,
+    result: PipelineResult,
+    *,
+    source_url: str | None = None,
+    prefix: str | None = None,
+) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "transcript.txt").write_text(_format_readable_text(result.transcript), encoding="utf-8")
+    name_prefix = f"{prefix}_" if prefix else ""
+
+    (output_dir / f"{name_prefix}transcript.txt").write_text(
+        _format_readable_text(result.transcript),
+        encoding="utf-8",
+    )
 
     if result.transcript_ja:
-        (output_dir / "transcript_ja.txt").write_text(_format_readable_text(result.transcript_ja), encoding="utf-8")
+        (output_dir / f"{name_prefix}transcript_ja.txt").write_text(
+            _format_readable_text(result.transcript_ja),
+            encoding="utf-8",
+        )
 
     if result.summary_md:
-        (output_dir / "summary.md").write_text(result.summary_md, encoding="utf-8")
+        (output_dir / f"{name_prefix}summary.md").write_text(result.summary_md, encoding="utf-8")
 
     metadata = {
         "created_at": datetime.now().isoformat(timespec="seconds"),
+        "output_prefix": prefix,
         "source_url": source_url,
         "source_language": result.source_language,
         "transcript_source": result.transcript_source,
         "has_translation": bool(result.transcript_ja),
         "has_summary": bool(result.summary_md),
     }
-    (output_dir / "metadata.json").write_text(
+    (output_dir / f"{name_prefix}metadata.json").write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )

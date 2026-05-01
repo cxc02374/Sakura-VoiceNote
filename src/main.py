@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
-import re
 
 from .config import load_config
 from .pipeline import run_pipeline, save_outputs
@@ -41,19 +41,15 @@ def _extract_video_key(url: str) -> str:
     return candidate or "video"
 
 
-def _build_run_output_dir(base_output_dir: Path, url: str) -> Path:
+def _build_output_prefix(base_output_dir: Path) -> str:
     base_output_dir.mkdir(parents=True, exist_ok=True)
 
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    video_key = _extract_video_key(url)
-
-    candidate = base_output_dir / f"{stamp}_{video_key}"
+    prefix = datetime.now().strftime("%Y%m%d%H%M%S")
+    candidate = prefix
     suffix = 2
-    while candidate.exists():
-        candidate = base_output_dir / f"{stamp}_{video_key}_{suffix}"
+    while (base_output_dir / f"{candidate}_transcript.txt").exists():
+        candidate = f"{prefix}_{suffix}"
         suffix += 1
-
-    candidate.mkdir(parents=True, exist_ok=False)
     return candidate
 
 
@@ -76,11 +72,12 @@ def main() -> int:
         print("[Sakura VoiceNote] 処理が中断されました。再実行してください。")
         return 130
 
-    run_output_dir = _build_run_output_dir(config.output_dir, args.url)
-    save_outputs(run_output_dir, result, source_url=args.url)
+    output_prefix = _build_output_prefix(config.output_dir)
+    save_outputs(config.output_dir, result, source_url=args.url, prefix=output_prefix)
 
     print("Sakura VoiceNote: 処理完了")
-    print(f"出力先: {run_output_dir}")
+    print(f"出力先: {config.output_dir}")
+    print(f"出力ファイル接頭辞: {output_prefix}")
     print(f"文字起こしソース: {result.transcript_source}")
     print(f"検出言語: {result.source_language}")
     return 0

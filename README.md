@@ -50,15 +50,15 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 ## 6. 出力ファイル
 
-実行後、`SakuraVoiceNote.exe` と同じフォルダー内の `output` 配下に、実行ごとのフォルダーを作成して保存します。
+実行後、`SakuraVoiceNote.exe` と同じフォルダー内の `output` に、タイムスタンプ付きファイル名で保存します。
 
-- 例: `output/20260501_145200_PygUK16aQgk/`
+- 例: `output/20260501102523_transcript.txt`
 - 別のURLを実行しても前回の結果は上書きされません
 
-- `output/<実行フォルダー>/transcript.txt`（文字起こし）
-- `output/<実行フォルダー>/transcript_ja.txt`（翻訳有効時）
-- `output/<実行フォルダー>/summary.md`（要約有効時）
-- `output/<実行フォルダー>/metadata.json`（処理メタ情報）
+- `output/<タイムスタンプ>_transcript.txt`（文字起こし）
+- `output/<タイムスタンプ>_transcript_ja.txt`（翻訳有効時）
+- `output/<タイムスタンプ>_summary.md`（要約有効時）
+- `output/<タイムスタンプ>_metadata.json`（処理メタ情報）
 
 ## 7. APIキーを設定しない場合
 

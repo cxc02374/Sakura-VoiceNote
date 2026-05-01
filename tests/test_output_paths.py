@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.main import _build_run_output_dir, _extract_video_key
+from src.main import _build_output_prefix, _extract_video_key
 
 
 class OutputPathTests(unittest.TestCase):
@@ -20,17 +20,16 @@ class OutputPathTests(unittest.TestCase):
             "PygUK16aQgk",
         )
 
-    def test_build_run_output_dir_creates_unique_directory(self) -> None:
+    def test_build_output_prefix_creates_unique_name(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
-            first = _build_run_output_dir(base, "https://www.youtube.com/watch?v=PygUK16aQgk")
-            second = _build_run_output_dir(base, "https://www.youtube.com/watch?v=PygUK16aQgk")
+            first = _build_output_prefix(base)
+            (base / f"{first}_transcript.txt").write_text("dummy", encoding="utf-8")
+            second = _build_output_prefix(base)
 
-            self.assertTrue(first.exists())
-            self.assertTrue(second.exists())
             self.assertNotEqual(first, second)
-            self.assertEqual(first.parent, base)
-            self.assertEqual(second.parent, base)
+            self.assertRegex(first, r"^\d{14}$")
+            self.assertRegex(second, r"^\d{14}_2$")
 
 
 if __name__ == "__main__":
