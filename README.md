@@ -18,6 +18,21 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 2. インストーラーを実行
 3. 画面の案内に沿ってインストール
 
+## 3.1 Windows Defender SmartScreen の警告が出た場合
+
+初回ダウンロード時に、Windows Defender SmartScreen から「信頼できることを確認してください」という警告が出ることがあります。
+
+これは **未署名の実行ファイル（コード署名証明書なし）** に対して Microsoft が自動表示する標準警告であり、ただちに不正ファイルを意味するものではありません。
+
+**対応方法（Edge の例）:**
+
+1. ダウンロード警告で `削除` 右の `▼` をクリック
+2. `保持する` を選択
+3. ダウンロード完了後、必要に応じてファイル右クリック → `プロパティ` → `許可する` にチェック
+4. `.exe` を実行し、Windows の実行確認が出たら `詳細情報` → `実行`
+
+> 補足: この画面は「起動確認」ではなく、まず「ダウンロード保持（保存）確認」です。
+
 ## 4. 初回設定（必要な場合のみ）
 
 アプリフォルダー直下の `.env` を使います。
@@ -42,7 +57,7 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 ### 翻訳と要約を有効化
 
-## 3.1 Windows Defender SmartScreen の警告が出た場合
+`"C:\Program Files\Sakura VoiceNote\SakuraVoiceNote.exe" "https://www.youtube.com/watch?v=..." --translate-ja --summarize`
 
 ### ヘルプ表示
 
@@ -54,6 +69,8 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 - 例: `output/20260501102523_transcript.txt`
 - 別のURLを実行しても前回の結果は上書きされません
+- `output/<タイムスタンプ>_transcript.txt`（文字起こし）
+- `output/<タイムスタンプ>_transcript_ja.txt`（翻訳有効時）
 - `output/<タイムスタンプ>_summary.md`（要約有効時）
 - `output/<タイムスタンプ>_metadata.json`（処理メタ情報）
 
