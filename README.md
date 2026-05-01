@@ -42,7 +42,7 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 ### 翻訳と要約を有効化
 
-`"C:\Program Files\Sakura VoiceNote\SakuraVoiceNote.exe" "https://www.youtube.com/watch?v=..." --translate-ja --summarize`
+## 3.1 Windows Defender SmartScreen の警告が出た場合
 
 ### ヘルプ表示
 
@@ -54,9 +54,6 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 - 例: `output/20260501102523_transcript.txt`
 - 別のURLを実行しても前回の結果は上書きされません
-
-- `output/<タイムスタンプ>_transcript.txt`（文字起こし）
-- `output/<タイムスタンプ>_transcript_ja.txt`（翻訳有効時）
 - `output/<タイムスタンプ>_summary.md`（要約有効時）
 - `output/<タイムスタンプ>_metadata.json`（処理メタ情報）
 
