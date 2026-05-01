@@ -66,10 +66,14 @@ SakuraVoiceNote.exe は URL 引数が必須です。
 処理結果は SakuraVoiceNote.exe と同じフォルダー内の output フォルダーに保存されます。
 
 主な出力ファイル
-- output\transcript.txt
-- output\transcript_ja.txt   （翻訳有効時）
-- output\summary.md          （要約有効時）
-- output\metadata.json
+- output\20260501102523_transcript.txt
+- output\20260501102523_transcript_ja.txt   （翻訳有効時）
+- output\20260501102523_summary.md          （要約有効時）
+- output\20260501102523_metadata.json
+
+補足
+- 実行ごとにタイムスタンプ付きファイル名で保存されるため、前回結果は上書きされません。
+- 同一秒に複数回実行した場合は `_2` などの接尾辞で重複回避します。
 
 APIキー未登録時の挙動
 --------------------

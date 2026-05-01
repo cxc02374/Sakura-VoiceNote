@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 from urllib.request import Request, urlopen
 
 from yt_dlp import YoutubeDL
@@ -128,19 +129,51 @@ def _parse_json3_subtitle(raw: str) -> str:
     return "\n".join(merged).strip()
 
 
+def _looks_like_json3_subtitle(raw: str) -> bool:
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(data, dict) and isinstance(data.get("events"), list)
+
+
+def _should_parse_as_json3(sub_url: str, track_ext: str | None, raw: str) -> bool:
+    normalized_ext = (track_ext or "").strip().lower()
+    if normalized_ext == "json3":
+        return True
+
+    parsed = urlparse(sub_url)
+    path = (parsed.path or "").lower()
+    if path.endswith(".json3"):
+        return True
+
+    query = parse_qs(parsed.query)
+    formats = [value.lower() for value in query.get("fmt", []) if value]
+    if "json3" in formats:
+        return True
+
+    return _looks_like_json3_subtitle(raw)
+
+
+def _parse_subtitle_payload(raw: str, *, sub_url: str, track_ext: str | None) -> str:
+    if _should_parse_as_json3(sub_url, track_ext, raw):
+        return _parse_json3_subtitle(raw)
+    return _strip_vtt(raw)
+
+
 def _download_text(url: str) -> str:
     req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urlopen(req, timeout=30) as resp:
         return resp.read().decode("utf-8", errors="ignore")
 
 
-def _pick_caption_track(info: dict[str, Any]) -> tuple[str, str] | None:
+def _pick_caption_track(info: dict[str, Any]) -> tuple[str, str, str | None] | None:
     subtitle_dict = info.get("subtitles") or {}
     auto_dict = info.get("automatic_captions") or {}
     preferred_langs = ["ja", "ja-JP", "en", "en-US"]
     preferred_exts = ["json3", "vtt", "srv3", "ttml"]
 
-    def choose(source: dict[str, list[dict[str, Any]]]) -> tuple[str, str] | None:
+    def choose(source: dict[str, list[dict[str, Any]]]) -> tuple[str, str, str | None] | None:
         langs = preferred_langs + [k for k in source.keys() if k not in preferred_langs]
         for lang in langs:
             tracks = source.get(lang)
@@ -153,7 +186,7 @@ def _pick_caption_track(info: dict[str, Any]) -> tuple[str, str] | None:
             for t in tracks_sorted:
                 u = t.get("url")
                 if u:
-                    return u, lang
+                    return u, lang, t.get("ext")
         return None
 
     return choose(subtitle_dict) or choose(auto_dict)
@@ -174,10 +207,10 @@ def _extract_subtitles(url: str) -> tuple[str, str] | None:
         _log("字幕は見つかりませんでした。音声フォールバック候補へ。")
         return None
 
-    sub_url, lang = picked
+    sub_url, lang, track_ext = picked
     try:
         raw = _download_text(sub_url)
-        transcript = _parse_json3_subtitle(raw) if sub_url.endswith(".json3") else _strip_vtt(raw)
+        transcript = _parse_subtitle_payload(raw, sub_url=sub_url, track_ext=track_ext)
     except Exception as ex:
         warnings.warn(f"字幕取得をスキップします: {ex}")
         _log("字幕取得失敗。音声フォールバックへ切替。")
