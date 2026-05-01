@@ -5,6 +5,7 @@ import os
 import re
 import textwrap
 import warnings
+from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -379,7 +380,8 @@ def run_pipeline(
     )
 
 
-def save_outputs(output_dir: Path, result: PipelineResult) -> None:
+def save_outputs(output_dir: Path, result: PipelineResult, *, source_url: str | None = None) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "transcript.txt").write_text(_format_readable_text(result.transcript), encoding="utf-8")
 
     if result.transcript_ja:
@@ -389,6 +391,8 @@ def save_outputs(output_dir: Path, result: PipelineResult) -> None:
         (output_dir / "summary.md").write_text(result.summary_md, encoding="utf-8")
 
     metadata = {
+        "created_at": datetime.now().isoformat(timespec="seconds"),
+        "source_url": source_url,
         "source_language": result.source_language,
         "transcript_source": result.transcript_source,
         "has_translation": bool(result.transcript_ja),

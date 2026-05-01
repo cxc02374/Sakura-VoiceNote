@@ -14,7 +14,7 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 ## 3. インストール（配布版）
 
-1. Releases から `SakuraVoiceNote_Setup_<version>.exe` をダウンロード
+1. GitHub の Releases ページから `SakuraVoiceNote_Setup_<version>.exe` をダウンロード
 2. インストーラーを実行
 3. 画面の案内に沿ってインストール
 
@@ -50,12 +50,15 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 
 ## 6. 出力ファイル
 
-実行後、`SakuraVoiceNote.exe` と同じフォルダー内の `output` に保存されます。
+実行後、`SakuraVoiceNote.exe` と同じフォルダー内の `output` 配下に、実行ごとのフォルダーを作成して保存します。
 
-- `output/transcript.txt`（文字起こし）
-- `output/transcript_ja.txt`（翻訳有効時）
-- `output/summary.md`（要約有効時）
-- `output/metadata.json`（処理メタ情報）
+- 例: `output/20260501_145200_PygUK16aQgk/`
+- 別のURLを実行しても前回の結果は上書きされません
+
+- `output/<実行フォルダー>/transcript.txt`（文字起こし）
+- `output/<実行フォルダー>/transcript_ja.txt`（翻訳有効時）
+- `output/<実行フォルダー>/summary.md`（要約有効時）
+- `output/<実行フォルダー>/metadata.json`（処理メタ情報）
 
 ## 7. APIキーを設定しない場合
 
