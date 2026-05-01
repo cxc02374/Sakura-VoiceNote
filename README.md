@@ -114,3 +114,12 @@ YouTube URLを入力すると、動画内容を文字起こしし、必要に応
 ### 開発者向けメモ（必要な人だけ）
 
 ビルドは `scripts/build_windows_installer.ps1` で実行できます。
+
+```powershell
+Set-Location 'D:/OneDrive/ドキュメント/NewProject/SakuraMark/Sakura VoiceNote'
+pwsh -ExecutionPolicy Bypass -File scripts/build_windows_installer.ps1 `
+  -Python 'D:\OneDrive\ドキュメント\NewProject\SakuraMark\.venv\Scripts\python.exe' `
+  -AppVersion "x.x.x"
+```
+
+> `.venv` は `SakuraMark/` 直下（`Sakura VoiceNote/` の外）にある。
