@@ -41,6 +41,26 @@ def _extract_video_key(url: str) -> str:
     return candidate or "video"
 
 
+def _is_supported_video_url(url: str) -> bool:
+    parsed = urlparse(url)
+    host = (parsed.netloc or "").lower()
+    if host.startswith("www."):
+        host = host[4:]
+
+    if not parsed.scheme.startswith("http"):
+        return False
+
+    if host == "youtu.be":
+        return bool(parsed.path.strip("/"))
+
+    if host.endswith("youtube.com"):
+        if parsed.path == "/watch":
+            return bool(parse_qs(parsed.query).get("v", [""])[0])
+        return bool(parsed.path.strip("/"))
+
+    return False
+
+
 def _build_output_prefix(base_output_dir: Path) -> str:
     base_output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -60,6 +80,13 @@ def main() -> int:
     project_root = _resolve_project_root()
     config = load_config(project_root)
 
+    if not _is_supported_video_url(args.url):
+        print("[Sakura VoiceNote] 入力URLが YouTube 形式ではありません。")
+        print("[Sakura VoiceNote] 例: https://www.youtube.com/watch?v=VIDEO_ID")
+        print("[Sakura VoiceNote] メモ: ダミーURL（example.com）は動作確認用で、必ず失敗します。")
+        print("[Sakura VoiceNote] 起動確認は完了しました（処理は実行していません）。")
+        return 0
+
     print("[Sakura VoiceNote] 実行を開始します...")
     try:
         result = run_pipeline(
@@ -71,6 +98,16 @@ def main() -> int:
     except KeyboardInterrupt:
         print("[Sakura VoiceNote] 処理が中断されました。再実行してください。")
         return 130
+    except Exception as ex:
+        msg = str(ex)
+        print("[Sakura VoiceNote] 処理に失敗しました。")
+        if "HTTP Error 404" in msg:
+            print("[Sakura VoiceNote] URLが無効、削除済み、またはアクセス不可の可能性があります。")
+        elif "Too Many Requests" in msg or "HTTP Error 429" in msg:
+            print("[Sakura VoiceNote] 取得先のレート制限に達しました。時間を空けて再実行してください。")
+        else:
+            print(f"[Sakura VoiceNote] 詳細: {msg}")
+        return 1
 
     output_prefix = _build_output_prefix(config.output_dir)
     save_outputs(config.output_dir, result, source_url=args.url, prefix=output_prefix)
